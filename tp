@@ -1,0 +1,252 @@
+local player = game.Players.LocalPlayer
+
+local URL = "nuevo_raw"
+
+local success,data = pcall(function()
+	return game:HttpGet(URL)
+end)
+
+if not success then
+	player:Kick("Error al verificar acceso")
+	return
+end
+
+local allowed = {}
+
+for id in string.gmatch(data,"%d+") do
+	allowed[tonumber(id)] = true
+end
+
+if not allowed[player.UserId] then
+	player:Kick("Error al verificar acceso")
+	return
+end
+
+local UIS = game:GetService("UserInputService")
+
+local isMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
+
+local function createGUI()
+
+if player.PlayerGui:FindFirstChild("NoxiTP") then
+	player.PlayerGui.NoxiTP:Destroy()
+end
+
+local gui = Instance.new("ScreenGui",player.PlayerGui)
+gui.Name = "NoxiTP"
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame",gui)
+frame.Size = UDim2.new(0,180,0,220)
+frame.Position = UDim2.new(0.5,-90,0.5,-110)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.BorderSizePixel = 0
+Instance.new("UICorner",frame).CornerRadius = UDim.new(0,12)
+
+local stroke = Instance.new("UIStroke",frame)
+stroke.Thickness = 2
+
+task.spawn(function()
+	while true do
+		for i=0,255,5 do
+			stroke.Color = Color3.fromRGB(255,i,0)
+			task.wait()
+		end
+		for i=255,0,-5 do
+			stroke.Color = Color3.fromRGB(i,0,255)
+			task.wait()
+		end
+	end
+end)
+
+local title = Instance.new("TextLabel",frame)
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundTransparency = 1
+title.Text = "NOXI TP"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+
+local credit = Instance.new("TextLabel",frame)
+credit.Position = UDim2.new(0,0,0,40)
+credit.Size = UDim2.new(1,0,0,20)
+credit.BackgroundTransparency = 1
+credit.Text = "@noxi.off1"
+credit.TextColor3 = Color3.fromRGB(200,200,200)
+credit.TextSize = 14
+
+-- 🔥 BOTONES CON TECLA VISIBLE
+local function makeBtn(text,key,posY)
+	local btn = Instance.new("TextButton",frame)
+	btn.Position = UDim2.new(0.1,0,posY,0)
+	btn.Size = UDim2.new(0.8,0,0,40)
+	btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.Text = text
+	Instance.new("UICorner",btn)
+
+	if key ~= "" then
+		local keyLabel = Instance.new("TextLabel",btn)
+		keyLabel.Size = UDim2.new(0,25,0,25)
+		keyLabel.Position = UDim2.new(1,-30,0.5,-12)
+		keyLabel.BackgroundTransparency = 1
+		keyLabel.Text = key
+		keyLabel.TextColor3 = Color3.fromRGB(255,255,255)
+		keyLabel.Font = Enum.Font.GothamBold
+		keyLabel.TextSize = 16
+	end
+
+	return btn
+end
+
+local saveBtn = makeBtn("Guardar","",0.3)
+local tpBtn = makeBtn("TP","R",0.5)
+local tpFullBtn = makeBtn("TP FULL","E",0.7)
+
+local minBtn = Instance.new("TextButton",frame)
+minBtn.Size = UDim2.new(0,30,0,30)
+minBtn.Position = UDim2.new(1,-35,0,5)
+minBtn.Text = "-"
+Instance.new("UICorner",minBtn)
+
+local minimized = false
+local originalSize = frame.Size
+
+local function setVisible(state)
+	credit.Visible = state
+	saveBtn.Visible = state
+	tpBtn.Visible = state
+	tpFullBtn.Visible = state
+end
+
+minBtn.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	if minimized then
+		frame.Size = UDim2.new(0,180,0,40)
+		minBtn.Text = "+"
+		setVisible(false)
+	else
+		frame.Size = originalSize
+		minBtn.Text = "-"
+		setVisible(true)
+	end
+end)
+
+local savedPosition
+
+saveBtn.MouseButton1Click:Connect(function()
+	local char = player.Character
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		savedPosition = char.HumanoidRootPart.Position
+		saveBtn.Text = "Guardado"
+	end
+end)
+
+local function useTool(name)
+	local char = player.Character
+	local backpack = player:FindFirstChild("Backpack")
+	if not char then return end
+
+	local tool = backpack and backpack:FindFirstChild(name) or char:FindFirstChild(name)
+
+	if tool and char:FindFirstChild("Humanoid") then
+		char.Humanoid:EquipTool(tool)
+		task.wait(0.2)
+		tool:Activate()
+	end
+end
+
+local function unequipAll()
+	local char = player.Character
+	if char and char:FindFirstChild("Humanoid") then
+		char.Humanoid:UnequipTools()
+	end
+end
+
+local function doTP()
+	if savedPosition then
+		useTool("Flying Carpet")
+		player.Character:MoveTo(savedPosition)
+	end
+end
+
+local function doTPFULL()
+	if not savedPosition then return end
+
+	useTool("Gummy Bear")
+	task.wait(0.2)
+	useTool("Flying Carpet")
+
+	player.Character:MoveTo(savedPosition)
+
+	task.wait(1)
+	unequipAll()
+	task.wait(0.2)
+	useTool("Giant Potion")
+end
+
+tpBtn.MouseButton1Click:Connect(doTP)
+tpFullBtn.MouseButton1Click:Connect(doTPFULL)
+
+-- 🔥 DRAG FIX
+local dragging = false
+local dragStart
+local startPos
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+	end
+end)
+
+frame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+
+UIS.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if not dragging then return end
+
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
+
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+if not isMobile then
+	UIS.InputBegan:Connect(function(input, gameProcessed)
+		if gameProcessed then return end
+		if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+
+		if input.KeyCode == Enum.KeyCode.E then
+			doTPFULL()
+		elseif input.KeyCode == Enum.KeyCode.R then
+			doTP()
+		end
+	end)
+end
+
+end
+
+createGUI()
