@@ -1,6 +1,6 @@
 local player = game.Players.LocalPlayer
 
-local URL = "https://raw.githubusercontent.com/jermy019/Tp/refs/heads/NOXI-TP/Clientes"
+local URL = "https://raw.githubusercontent.com/noxioff/Tp/refs/heads/Tp/Clientes"
 
 local success,data = pcall(function()
 	return game:HttpGet(URL)
