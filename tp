@@ -1,267 +1,252 @@
-local __b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-local function __d(d)
-  d=string.gsub(d,'[^'..__b..'=]','')
-  return(d:gsub('.',function(x)
-    if x=='=' then return '' end
-    local r,f='',(string.find(__b,x)-1)
-    for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
-    return r
-  end):gsub('%d%d%d?%d?%d?%d?%d?%d?',function(x)
-    if #x~=8 then return '' end
-    local c=0
-    for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
-    return string.char(c)
-  end))
+local player = game.Players.LocalPlayer
+
+local URL = "https://raw.githubusercontent.com/noxioff/Tp/refs/heads/Tp/Clientes"
+
+local success,data = pcall(function()
+	return game:HttpGet(URL)
+end)
+
+if not success then
+	player:Kick("Error al verificar acceso")
+	return
 end
-loadstring(__d("bG9jYWwgcGxheWVyID0gZ2FtZS5QbGF5ZXJzLkxvY2FsUGxheWVy
 
-bG9jYWwgVVJMID0gImh0dHBzOi8vcmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbS9ub3hpb2ZmL1RwL3JlZnMvaGVhZHMvVHAvQ2xpZW50ZXMi
+local allowed = {}
 
-bG9jYWwgc3VjY2VzcyxkYXRhID0gcGNhbGwoZnVuY3Rpb24oKQ
-CXJldHVybiBnYW1lOkh0dHBHZXQoVVJMKQ
-ZW5kKQ
+for id in string.gmatch(data,"%d+") do
+	allowed[tonumber(id)] = true
+end
 
-aWYgbm90IHN1Y2Nlc3MgdGhlbg
-CXBsYXllcjpLaWNrKCJFcnJvciBhbCB2ZXJpZmljYXIgYWNjZXNvIik
-CXJldHVybg
-ZW5k
+if not allowed[player.UserId] then
+	player:Kick("Error al verificar acceso")
+	return
+end
 
-bG9jYWwgYWxsb3dlZCA9IHt9
+local UIS = game:GetService("UserInputService")
 
-Zm9yIGlkIGluIHN0cmluZy5nbWF0Y2goZGF0YSwiJWQrIikgZG8
-CWFsbG93ZWRbdG9udW1iZXIoaWQpXSA9IHRydWU
-ZW5k
+local isMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
 
-aWYgbm90IGFsbG93ZWRbcGxheWVyLlVzZXJJZF0gdGhlbg
-CXBsYXllcjpLaWNrKCJFcnJvciBhbCB2ZXJpZmljYXIgYWNjZXNvIik
-CXJldHVybg
-ZW5k
+local function createGUI()
 
-bG9jYWwgVUlTID0gZ2FtZTpHZXRTZXJ2aWNlKCJVc2VySW5wdXRTZXJ2aWNlIik
+if player.PlayerGui:FindFirstChild("NoxiTP") then
+	player.PlayerGui.NoxiTP:Destroy()
+end
 
-bG9jYWwgaXNNb2JpbGUgPSBVSVMuVG91Y2hFbmFibGVkIGFuZCBub3QgVUlTLktleWJvYXJkRW5hYmxlZA
+local gui = Instance.new("ScreenGui",player.PlayerGui)
+gui.Name = "NoxiTP"
+gui.ResetOnSpawn = false
 
-bG9jYWwgZnVuY3Rpb24gY3JlYXRlR1VJKCk
+local frame = Instance.new("Frame",gui)
+frame.Size = UDim2.new(0,180,0,220)
+frame.Position = UDim2.new(0.5,-90,0.5,-110)
+frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+frame.BorderSizePixel = 0
+Instance.new("UICorner",frame).CornerRadius = UDim.new(0,12)
 
-aWYgcGxheWVyLlBsYXllckd1aTpGaW5kRmlyc3RDaGlsZCgiTm94aVRQIikgdGhlbg
-CXBsYXllci5QbGF5ZXJHdWkuTm94aVRQOkRlc3Ryb3koKQ
-ZW5k
+local stroke = Instance.new("UIStroke",frame)
+stroke.Thickness = 2
 
-bG9jYWwgZ3VpID0gSW5zdGFuY2UubmV3KCJTY3JlZW5HdWkiLHBsYXllci5QbGF5ZXJHdWkp
-Z3VpLk5hbWUgPSAiTm94aVRQIg
-Z3VpLlJlc2V0T25TcGF3biA9IGZhbHNl
+task.spawn(function()
+	while true do
+		for i=0,255,5 do
+			stroke.Color = Color3.fromRGB(255,i,0)
+			task.wait()
+		end
+		for i=255,0,-5 do
+			stroke.Color = Color3.fromRGB(i,0,255)
+			task.wait()
+		end
+	end
+end)
 
-bG9jYWwgZnJhbWUgPSBJbnN0YW5jZS5uZXcoIkZyYW1lIixndWkp
-ZnJhbWUuU2l6ZSA9IFVEaW0yLm5ldygwLDE4MCwwLDIyMCk
-ZnJhbWUuUG9zaXRpb24gPSBVRGltMi5uZXcoMC41LC05MCwwLjUsLTExMCk
-ZnJhbWUuQmFja2dyb3VuZENvbG9yMyA9IENvbG9yMy5mcm9tUkdCKDAsMCwwKQ
-ZnJhbWUuQm9yZGVyU2l6ZVBpeGVsID0gMA
-SW5zdGFuY2UubmV3KCJVSUNvcm5lciIsZnJhbWUpLkNvcm5lclJhZGl1cyA9IFVEaW0ubmV3KDAsMTIp
+local title = Instance.new("TextLabel",frame)
+title.Size = UDim2.new(1,0,0,40)
+title.BackgroundTransparency = 1
+title.Text = "NOXI TP"
+title.TextColor3 = Color3.new(1,1,1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
 
-bG9jYWwgc3Ryb2tlID0gSW5zdGFuY2UubmV3KCJVSVN0cm9rZSIsZnJhbWUp
-c3Ryb2tlLlRoaWNrbmVzcyA9IDI
+local credit = Instance.new("TextLabel",frame)
+credit.Position = UDim2.new(0,0,0,40)
+credit.Size = UDim2.new(1,0,0,20)
+credit.BackgroundTransparency = 1
+credit.Text = "@noxi.off1"
+credit.TextColor3 = Color3.fromRGB(200,200,200)
+credit.TextSize = 14
 
-dGFzay5zcGF3bihmdW5jdGlvbigp
-CXdoaWxlIHRydWUgZG8
-CQlmb3IgaT0wLDI1NSw1IGRv
-CQkJc3Ryb2tlLkNvbG9yID0gQ29sb3IzLmZyb21SR0IoMjU1LGksMCk
-CQkJdGFzay53YWl0KCk
-CQllbmQ
-CQlmb3IgaT0yNTUsMCwtNSBkbw
-CQkJc3Ryb2tlLkNvbG9yID0gQ29sb3IzLmZyb21SR0IoaSwwLDI1NSk
-CQkJdGFzay53YWl0KCk
-CQllbmQ
-CWVuZA
-ZW5kKQ
+-- 🔥 BOTONES CON TECLA VISIBLE
+local function makeBtn(text,key,posY)
+	local btn = Instance.new("TextButton",frame)
+	btn.Position = UDim2.new(0.1,0,posY,0)
+	btn.Size = UDim2.new(0.8,0,0,40)
+	btn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+	btn.TextColor3 = Color3.new(1,1,1)
+	btn.Font = Enum.Font.Gotham
+	btn.TextSize = 14
+	btn.Text = text
+	Instance.new("UICorner",btn)
 
-bG9jYWwgdGl0bGUgPSBJbnN0YW5jZS5uZXcoIlRleHRMYWJlbCIsZnJhbWUp
-dGl0bGUuU2l6ZSA9IFVEaW0yLm5ldygxLDAsMCw0MCk
-dGl0bGUuQmFja2dyb3VuZFRyYW5zcGFyZW5jeSA9IDE
-dGl0bGUuVGV4dCA9ICJOT1hJIFRQIg
-dGl0bGUuVGV4dENvbG9yMyA9IENvbG9yMy5uZXcoMSwxLDEp
-dGl0bGUuRm9udCA9IEVudW0uRm9udC5Hb3RoYW1Cb2xk
-dGl0bGUuVGV4dFNpemUgPSAyMA
+	if key ~= "" then
+		local keyLabel = Instance.new("TextLabel",btn)
+		keyLabel.Size = UDim2.new(0,25,0,25)
+		keyLabel.Position = UDim2.new(1,-30,0.5,-12)
+		keyLabel.BackgroundTransparency = 1
+		keyLabel.Text = key
+		keyLabel.TextColor3 = Color3.fromRGB(255,255,255)
+		keyLabel.Font = Enum.Font.GothamBold
+		keyLabel.TextSize = 16
+	end
 
-bG9jYWwgY3JlZGl0ID0gSW5zdGFuY2UubmV3KCJUZXh0TGFiZWwiLGZyYW1lKQ
-Y3JlZGl0LlBvc2l0aW9uID0gVURpbTIubmV3KDAsMCwwLDQwKQ
-Y3JlZGl0LlNpemUgPSBVRGltMi5uZXcoMSwwLDAsMjAp
-Y3JlZGl0LkJhY2tncm91bmRUcmFuc3BhcmVuY3kgPSAx
-Y3JlZGl0LlRleHQgPSAiQG5veGkub2ZmMSI
-Y3JlZGl0LlRleHRDb2xvcjMgPSBDb2xvcjMuZnJvbVJHQigyMDAsMjAwLDIwMCk
-Y3JlZGl0LlRleHRTaXplID0gMTQ
+	return btn
+end
 
-LS0g8J-UpSBCT1RPTkVTIENPTiBURUNMQSBWSVNJQkxF
-bG9jYWwgZnVuY3Rpb24gbWFrZUJ0bih0ZXh0LGtleSxwb3NZKQ
-CWxvY2FsIGJ0biA9IEluc3RhbmNlLm5ldygiVGV4dEJ1dHRvbiIsZnJhbWUp
-CWJ0bi5Qb3NpdGlvbiA9IFVEaW0yLm5ldygwLjEsMCxwb3NZLDAp
-CWJ0bi5TaXplID0gVURpbTIubmV3KDAuOCwwLDAsNDAp
-CWJ0bi5CYWNrZ3JvdW5kQ29sb3IzID0gQ29sb3IzLmZyb21SR0IoMzAsMzAsMzAp
-CWJ0bi5UZXh0Q29sb3IzID0gQ29sb3IzLm5ldygxLDEsMSk
-CWJ0bi5Gb250ID0gRW51bS5Gb250LkdvdGhhbQ
-CWJ0bi5UZXh0U2l6ZSA9IDE0
-CWJ0bi5UZXh0ID0gdGV4dA
-CUluc3RhbmNlLm5ldygiVUlDb3JuZXIiLGJ0bik
+local saveBtn = makeBtn("Guardar","",0.3)
+local tpBtn = makeBtn("TP","R",0.5)
+local tpFullBtn = makeBtn("TP FULL","E",0.7)
 
-CWlmIGtleSB-PSAiIiB0aGVu
-CQlsb2NhbCBrZXlMYWJlbCA9IEluc3RhbmNlLm5ldygiVGV4dExhYmVsIixidG4p
-CQlrZXlMYWJlbC5TaXplID0gVURpbTIubmV3KDAsMjUsMCwyNSk
-CQlrZXlMYWJlbC5Qb3NpdGlvbiA9IFVEaW0yLm5ldygxLC0zMCwwLjUsLTEyKQ
-CQlrZXlMYWJlbC5CYWNrZ3JvdW5kVHJhbnNwYXJlbmN5ID0gMQ
-CQlrZXlMYWJlbC5UZXh0ID0ga2V5
-CQlrZXlMYWJlbC5UZXh0Q29sb3IzID0gQ29sb3IzLmZyb21SR0IoMjU1LDI1NSwyNTUp
-CQlrZXlMYWJlbC5Gb250ID0gRW51bS5Gb250LkdvdGhhbUJvbGQ
-CQlrZXlMYWJlbC5UZXh0U2l6ZSA9IDE2
-CWVuZA
+local minBtn = Instance.new("TextButton",frame)
+minBtn.Size = UDim2.new(0,30,0,30)
+minBtn.Position = UDim2.new(1,-35,0,5)
+minBtn.Text = "-"
+Instance.new("UICorner",minBtn)
 
-CXJldHVybiBidG4
-ZW5k
+local minimized = false
+local originalSize = frame.Size
 
-bG9jYWwgc2F2ZUJ0biA9IG1ha2VCdG4oIkd1YXJkYXIiLCIiLDAuMyk
-bG9jYWwgdHBCdG4gPSBtYWtlQnRuKCJUUCIsIlIiLDAuNSk
-bG9jYWwgdHBGdWxsQnRuID0gbWFrZUJ0bigiVFAgRlVMTCIsIkUiLDAuNyk
+local function setVisible(state)
+	credit.Visible = state
+	saveBtn.Visible = state
+	tpBtn.Visible = state
+	tpFullBtn.Visible = state
+end
 
-bG9jYWwgbWluQnRuID0gSW5zdGFuY2UubmV3KCJUZXh0QnV0dG9uIixmcmFtZSk
-bWluQnRuLlNpemUgPSBVRGltMi5uZXcoMCwzMCwwLDMwKQ
-bWluQnRuLlBvc2l0aW9uID0gVURpbTIubmV3KDEsLTM1LDAsNSk
-bWluQnRuLlRleHQgPSAiLSI
-SW5zdGFuY2UubmV3KCJVSUNvcm5lciIsbWluQnRuKQ
+minBtn.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	if minimized then
+		frame.Size = UDim2.new(0,180,0,40)
+		minBtn.Text = "+"
+		setVisible(false)
+	else
+		frame.Size = originalSize
+		minBtn.Text = "-"
+		setVisible(true)
+	end
+end)
 
-bG9jYWwgbWluaW1pemVkID0gZmFsc2U
-bG9jYWwgb3JpZ2luYWxTaXplID0gZnJhbWUuU2l6ZQ
+local savedPosition
 
-bG9jYWwgZnVuY3Rpb24gc2V0VmlzaWJsZShzdGF0ZSk
-CWNyZWRpdC5WaXNpYmxlID0gc3RhdGU
-CXNhdmVCdG4uVmlzaWJsZSA9IHN0YXRl
-CXRwQnRuLlZpc2libGUgPSBzdGF0ZQ
-CXRwRnVsbEJ0bi5WaXNpYmxlID0gc3RhdGU
-ZW5k
+saveBtn.MouseButton1Click:Connect(function()
+	local char = player.Character
+	if char and char:FindFirstChild("HumanoidRootPart") then
+		savedPosition = char.HumanoidRootPart.Position
+		saveBtn.Text = "Guardado"
+	end
+end)
 
-bWluQnRuLk1vdXNlQnV0dG9uMUNsaWNrOkNvbm5lY3QoZnVuY3Rpb24oKQ
-CW1pbmltaXplZCA9IG5vdCBtaW5pbWl6ZWQ
-CWlmIG1pbmltaXplZCB0aGVu
-CQlmcmFtZS5TaXplID0gVURpbTIubmV3KDAsMTgwLDAsNDAp
-CQltaW5CdG4uVGV4dCA9ICIrIg
-CQlzZXRWaXNpYmxlKGZhbHNlKQ
-CWVsc2U
-CQlmcmFtZS5TaXplID0gb3JpZ2luYWxTaXpl
-CQltaW5CdG4uVGV4dCA9ICItIg
-CQlzZXRWaXNpYmxlKHRydWUp
-CWVuZA
-ZW5kKQ
+local function useTool(name)
+	local char = player.Character
+	local backpack = player:FindFirstChild("Backpack")
+	if not char then return end
 
-bG9jYWwgc2F2ZWRQb3NpdGlvbg
+	local tool = backpack and backpack:FindFirstChild(name) or char:FindFirstChild(name)
 
-c2F2ZUJ0bi5Nb3VzZUJ1dHRvbjFDbGljazpDb25uZWN0KGZ1bmN0aW9uKCk
-CWxvY2FsIGNoYXIgPSBwbGF5ZXIuQ2hhcmFjdGVy
-CWlmIGNoYXIgYW5kIGNoYXI6RmluZEZpcnN0Q2hpbGQoIkh1bWFub2lkUm9vdFBhcnQiKSB0aGVu
-CQlzYXZlZFBvc2l0aW9uID0gY2hhci5IdW1hbm9pZFJvb3RQYXJ0LlBvc2l0aW9u
-CQlzYXZlQnRuLlRleHQgPSAiR3VhcmRhZG8i
-CWVuZA
-ZW5kKQ
+	if tool and char:FindFirstChild("Humanoid") then
+		char.Humanoid:EquipTool(tool)
+		task.wait(0.2)
+		tool:Activate()
+	end
+end
 
-bG9jYWwgZnVuY3Rpb24gdXNlVG9vbChuYW1lKQ
-CWxvY2FsIGNoYXIgPSBwbGF5ZXIuQ2hhcmFjdGVy
-CWxvY2FsIGJhY2twYWNrID0gcGxheWVyOkZpbmRGaXJzdENoaWxkKCJCYWNrcGFjayIp
-CWlmIG5vdCBjaGFyIHRoZW4gcmV0dXJuIGVuZA
+local function unequipAll()
+	local char = player.Character
+	if char and char:FindFirstChild("Humanoid") then
+		char.Humanoid:UnequipTools()
+	end
+end
 
-CWxvY2FsIHRvb2wgPSBiYWNrcGFjayBhbmQgYmFja3BhY2s6RmluZEZpcnN0Q2hpbGQobmFtZSkgb3IgY2hhcjpGaW5kRmlyc3RDaGlsZChuYW1lKQ
+local function doTP()
+	if savedPosition then
+		useTool("Flying Carpet")
+		player.Character:MoveTo(savedPosition)
+	end
+end
 
-CWlmIHRvb2wgYW5kIGNoYXI6RmluZEZpcnN0Q2hpbGQoIkh1bWFub2lkIikgdGhlbg
-CQljaGFyLkh1bWFub2lkOkVxdWlwVG9vbCh0b29sKQ
-CQl0YXNrLndhaXQoMC4yKQ
-CQl0b29sOkFjdGl2YXRlKCk
-CWVuZA
-ZW5k
+local function doTPFULL()
+	if not savedPosition then return end
 
-bG9jYWwgZnVuY3Rpb24gdW5lcXVpcEFsbCgp
-CWxvY2FsIGNoYXIgPSBwbGF5ZXIuQ2hhcmFjdGVy
-CWlmIGNoYXIgYW5kIGNoYXI6RmluZEZpcnN0Q2hpbGQoIkh1bWFub2lkIikgdGhlbg
-CQljaGFyLkh1bWFub2lkOlVuZXF1aXBUb29scygp
-CWVuZA
-ZW5k
+	useTool("Gummy Bear")
+	task.wait(0.2)
+	useTool("Flying Carpet")
 
-bG9jYWwgZnVuY3Rpb24gZG9UUCgp
-CWlmIHNhdmVkUG9zaXRpb24gdGhlbg
-CQl1c2VUb29sKCJGbHlpbmcgQ2FycGV0Iik
-CQlwbGF5ZXIuQ2hhcmFjdGVyOk1vdmVUbyhzYXZlZFBvc2l0aW9uKQ
-CWVuZA
-ZW5k
+	player.Character:MoveTo(savedPosition)
 
-bG9jYWwgZnVuY3Rpb24gZG9UUEZVTEwoKQ
-CWlmIG5vdCBzYXZlZFBvc2l0aW9uIHRoZW4gcmV0dXJuIGVuZA
+	task.wait(1)
+	unequipAll()
+	task.wait(0.2)
+	useTool("Giant Potion")
+end
 
-CXVzZVRvb2woIkd1bW15IEJlYXIiKQ
-CXRhc2sud2FpdCgwLjIp
-CXVzZVRvb2woIkZseWluZyBDYXJwZXQiKQ
+tpBtn.MouseButton1Click:Connect(doTP)
+tpFullBtn.MouseButton1Click:Connect(doTPFULL)
 
-CXBsYXllci5DaGFyYWN0ZXI6TW92ZVRvKHNhdmVkUG9zaXRpb24p
+-- 🔥 DRAG FIX
+local dragging = false
+local dragStart
+local startPos
 
-CXRhc2sud2FpdCgxKQ
-CXVuZXF1aXBBbGwoKQ
-CXRhc2sud2FpdCgwLjIp
-CXVzZVRvb2woIkdpYW50IFBvdGlvbiIp
-ZW5k
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+	end
+end)
 
-dHBCdG4uTW91c2VCdXR0b24xQ2xpY2s6Q29ubmVjdChkb1RQKQ
-dHBGdWxsQnRuLk1vdXNlQnV0dG9uMUNsaWNrOkNvbm5lY3QoZG9UUEZVTEwp
+frame.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
 
-LS0g8J-UpSBEUkFHIEZJWA
-bG9jYWwgZHJhZ2dpbmcgPSBmYWxzZQ
-bG9jYWwgZHJhZ1N0YXJ0
-bG9jYWwgc3RhcnRQb3M
+UIS.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
 
-ZnJhbWUuSW5wdXRCZWdhbjpDb25uZWN0KGZ1bmN0aW9uKGlucHV0KQ
-CWlmIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlQnV0dG9uMQ
-CW9yIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4
-CQlkcmFnZ2luZyA9IHRydWU
-CQlkcmFnU3RhcnQgPSBpbnB1dC5Qb3NpdGlvbg
-CQlzdGFydFBvcyA9IGZyYW1lLlBvc2l0aW9u
-CWVuZA
-ZW5kKQ
+UIS.InputChanged:Connect(function(input)
+	if not dragging then return end
 
-ZnJhbWUuSW5wdXRFbmRlZDpDb25uZWN0KGZ1bmN0aW9uKGlucHV0KQ
-CWlmIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlQnV0dG9uMQ
-CW9yIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4
-CQlkcmFnZ2luZyA9IGZhbHNl
-CWVuZA
-ZW5kKQ
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+	or input.UserInputType == Enum.UserInputType.Touch then
 
-VUlTLklucHV0RW5kZWQ6Q29ubmVjdChmdW5jdGlvbihpbnB1dCk
-CWlmIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlQnV0dG9uMQ
-CW9yIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4
-CQlkcmFnZ2luZyA9IGZhbHNl
-CWVuZA
-ZW5kKQ
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
 
-VUlTLklucHV0Q2hhbmdlZDpDb25uZWN0KGZ1bmN0aW9uKGlucHV0KQ
-CWlmIG5vdCBkcmFnZ2luZyB0aGVuIHJldHVybiBlbmQ
+if not isMobile then
+	UIS.InputBegan:Connect(function(input, gameProcessed)
+		if gameProcessed then return end
+		if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
 
-CWlmIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLk1vdXNlTW92ZW1lbnQ
-CW9yIGlucHV0LlVzZXJJbnB1dFR5cGUgPT0gRW51bS5Vc2VySW5wdXRUeXBlLlRvdWNoIHRoZW4
+		if input.KeyCode == Enum.KeyCode.E then
+			doTPFULL()
+		elseif input.KeyCode == Enum.KeyCode.R then
+			doTP()
+		end
+	end)
+end
 
-CQlsb2NhbCBkZWx0YSA9IGlucHV0LlBvc2l0aW9uIC0gZHJhZ1N0YXJ0
-CQlmcmFtZS5Qb3NpdGlvbiA9IFVEaW0yLm5ldyg
-CQkJc3RhcnRQb3MuWC5TY2FsZSw
-CQkJc3RhcnRQb3MuWC5PZmZzZXQgKyBkZWx0YS5YLA
-CQkJc3RhcnRQb3MuWS5TY2FsZSw
-CQkJc3RhcnRQb3MuWS5PZmZzZXQgKyBkZWx0YS5Z
-CQkp
-CWVuZA
-ZW5kKQ
+end
 
-aWYgbm90IGlzTW9iaWxlIHRoZW4
-CVVJUy5JbnB1dEJlZ2FuOkNvbm5lY3QoZnVuY3Rpb24oaW5wdXQsIGdhbWVQcm9jZXNzZWQp
-CQlpZiBnYW1lUHJvY2Vzc2VkIHRoZW4gcmV0dXJuIGVuZA
-CQlpZiBpbnB1dC5Vc2VySW5wdXRUeXBlIH49IEVudW0uVXNlcklucHV0VHlwZS5LZXlib2FyZCB0aGVuIHJldHVybiBlbmQ
-
-CQlpZiBpbnB1dC5LZXlDb2RlID09IEVudW0uS2V5Q29kZS5FIHRoZW4
-CQkJZG9UUEZVTEwoKQ
-CQllbHNlaWYgaW5wdXQuS2V5Q29kZSA9PSBFbnVtLktleUNvZGUuUiB0aGVu
-CQkJZG9UUCgp
-CQllbmQ
-CWVuZCk
-ZW5k
-
-ZW5k
-
-Y3JlYXRlR1VJKCk"))()
+createGUI()
