@@ -75,7 +75,6 @@ credit.Text = "@noxi.off1"
 credit.TextColor3 = Color3.fromRGB(200,200,200)
 credit.TextSize = 14
 
--- 🔥 BOTONES CON TECLA VISIBLE
 local function makeBtn(text,key,posY)
 	local btn = Instance.new("TextButton",frame)
 	btn.Position = UDim2.new(0.1,0,posY,0)
@@ -141,6 +140,9 @@ saveBtn.MouseButton1Click:Connect(function()
 	if char and char:FindFirstChild("HumanoidRootPart") then
 		savedPosition = char.HumanoidRootPart.Position
 		saveBtn.Text = "Guardado"
+task.delay(1,function()
+	saveBtn.Text = "Guardar"
+end)saveBtn.Text = "Guardado"
 	end
 end)
 
@@ -148,13 +150,13 @@ local function useTool(name)
 	local char = player.Character
 	local backpack = player:FindFirstChild("Backpack")
 	if not char then return end
-
 	local tool = backpack and backpack:FindFirstChild(name) or char:FindFirstChild(name)
-
 	if tool and char:FindFirstChild("Humanoid") then
 		char.Humanoid:EquipTool(tool)
-		task.wait(0.2)
-		tool:Activate()
+		if name ~= "Flying Carpet" then
+			task.wait(0.2)
+			tool:Activate()
+		end
 	end
 end
 
@@ -190,7 +192,6 @@ end
 tpBtn.MouseButton1Click:Connect(doTP)
 tpFullBtn.MouseButton1Click:Connect(doTPFULL)
 
--- 🔥 DRAG FIX
 local dragging = false
 local dragStart
 local startPos
